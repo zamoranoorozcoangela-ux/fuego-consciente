@@ -1,4 +1,4 @@
-import { auth, signIn, signOut, esTerapeuta } from "@/auth";
+import { auth, signIn, signOut, esTerapeuta, googleListo } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -80,18 +80,26 @@ export default async function Portada() {
               continuarlo desde otro equipo y ver tu histórico. No publicamos
               nada ni escribimos a tus contactos.
             </p>
-            <div className="fila-btn">
-              <form
-                action={async () => {
-                  "use server";
-                  await signIn("google", { redirectTo: "/" });
-                }}
-              >
-                <button className="btn" type="submit">
-                  Entrar con Google
-                </button>
-              </form>
-            </div>
+            {googleListo ? (
+              <div className="fila-btn">
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("google", { redirectTo: "/" });
+                  }}
+                >
+                  <button className="btn" type="submit">
+                    Entrar con Google
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <p className="nota">
+                El acceso con Google todavía no está configurado en el servidor.
+                Faltan las variables <code>AUTH_GOOGLE_ID</code> y{" "}
+                <code>AUTH_GOOGLE_SECRET</code>.
+              </p>
+            )}
           </div>
         )}
 

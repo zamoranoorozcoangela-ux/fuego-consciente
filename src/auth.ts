@@ -9,9 +9,15 @@ const superAdmins = (process.env.SUPER_ADMIN_EMAILS || "")
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);
 
+/** Solo registramos Google cuando sus credenciales existen, para que la app
+ *  levante igual mientras se terminan de configurar en Google Cloud. */
+export const googleListo = Boolean(
+  process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [Google],
+  providers: googleListo ? [Google] : [],
   session: { strategy: "database" },
   pages: { signIn: "/" },
   callbacks: {
