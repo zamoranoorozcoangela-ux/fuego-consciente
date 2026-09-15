@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  USUARIO
+  TERAPEUTA
+  SUPER_ADMIN
+}
+
+enum EstadoSala {
+  BUSCANDO
+  ACTIVA
+  CERRADA
+}
+
+enum EstadoPago {
+  PENDIENTE
+  CONFIRMADO
+  RECHAZADO
+}
+
+// ---------- Auth.js ----------
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  rol         Rol @default(USUARIO)
+  creditos    Int @default(0)
+  acompUsados Int @default(0)
+
+  disponible Boolean @default(false)
+
+  accounts Account[]
+  sessions Session[]
+  procesos Proceso[]
+  salas    Sala[]
+  mensajes Mensaje[]
+  pagos    Pago[]
+
+  creado DateTime @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---------- Fuego Consciente ----------
+model Proceso {
+  id          String   @id @default(cuid())
+  userId      String
+  palabra     String   @default("")
+  necesidadId String   @default("")
+  necesidad   String   @default("")
+  paso        Int      @default(1)
+  datos       Json
+  creado      DateTime @default(now())
+  actualizado DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, actualizado])
+}
+
+model Sala {
+  id        String     @id @default(cuid())
+  userId    String
+  estado    EstadoSala @default(BUSCANDO)
+  expira    DateTime?
+  palabra   String     @default("")
+  necesidad String     @default("")
+  ultimoMsg String     @default("")
+  creada    DateTime   @default(now())
+  ultimo    DateTime   @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mensajes Mensaje[]
+
+  @@index([ultimo])
+}
+
+model Mensaje {
+  id     String   @id @default(cuid())
+  salaId String
+  autorId String
+  de     String
+  nombre String   @default("")
+  texto  String   @db.Text
+  ts     DateTime @default(now())
+
+  sala  Sala @relation(fields: [salaId], references: [id], onDelete: Cascade)
+  autor User @relation(fields: [autorId], references: [id], onDelete: Cascade)
+
+  @@index([salaId, ts])
+}
+
+model Pago {
+  id          String     @id @default(cuid())
+  userId      String
+  referencia  String
+  valor       String     @default("3 USD")
+  estado      EstadoPago @default(PENDIENTE)
+  ts          DateTime   @default(now())
+  confirmado  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([estado, ts])
+}
