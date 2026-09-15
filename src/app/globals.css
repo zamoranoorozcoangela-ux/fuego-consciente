@@ -488,3 +488,16 @@ img{max-width:100%}
     .brasa-card,.puente,.patron,.bitacora-form{padding-inline:18px}
     .tablero{gap:5px}
   }
+
+/* ---------- Placa de marca ---------- */
+:root{ --marca-fondo:#9E3A17; }
+.marca-logo{
+  background:var(--marca-fondo);
+  border-radius:3px;
+  padding:clamp(18px,4vw,28px);
+  display:grid;place-items:center;
+}
+.marca-logo img{
+  width:min(300px,78%);
+  height:auto;display:block;
+}

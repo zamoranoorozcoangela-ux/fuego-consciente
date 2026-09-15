@@ -1,6 +1,7 @@
 # Fuego Consciente — La raíz de lo que duele
 
 Acompañamiento en situaciones de dolor por Fuego Consciente.
+
 App web del recorrido de siete pasos, con login de Google, histórico por persona
 y acompañamiento con terapeuta.
 

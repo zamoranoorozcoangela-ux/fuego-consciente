@@ -14,9 +14,14 @@ export default async function Portada() {
   return (
     <div className="wrap">
       <header className="portada">
+        <div className="marca-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-completo.png" alt="Fuego Consciente" />
+        </div>
+
         <div className="marca">
           <span className="chispa" />
-          Fuego Consciente · Cali
+          Cali · Terapia integral
         </div>
 
         <h1 className="titulo">
