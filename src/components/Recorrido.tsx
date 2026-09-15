@@ -332,10 +332,10 @@ export default function Recorrido({
   return (
     <div className="wrap">
       <header className="portada">
-        <div className="marca">
-          <span className="chispa" />
-          Fuego Consciente · Cali
-        </div>
+        <a href="/" className="marca-logo" aria-label="Fuego Consciente — inicio">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-completo.png" alt="Fuego Consciente" />
+        </a>
         <h1 className="titulo">
           La raíz
           <br />
@@ -909,6 +909,28 @@ export default function Recorrido({
           </section>
         )}
       </main>
+
+      <footer className="cierre">
+        <div className="firma">Fuego Consciente</div>
+        <p>
+          Angela · Terapeuta integral. Masaje tailandés y escucha consciente en
+          Cali. Si al hacer este recorrido se te movió algo que quieres acompañar
+          con el cuerpo, escríbeme.
+        </p>
+        <p>
+          <a href="https://wa.me/573162958779" target="_blank" rel="noopener noreferrer">
+            WhatsApp +57 316 295 8779
+          </a>{" "}
+          ·{" "}
+          <a
+            href="https://instagram.com/fuegoycuerpoconsciente"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            @fuegoycuerpoconsciente
+          </a>
+        </p>
+      </footer>
 
       {aviso && <div className="aviso-toast">{aviso}</div>}
     </div>

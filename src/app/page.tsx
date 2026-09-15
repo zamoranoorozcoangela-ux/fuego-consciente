@@ -39,74 +39,63 @@ export default async function Portada() {
           que quedó sin cubrir — y a empezar a dártela tú.
         </p>
 
-        {usuario ? (
-          <div className="tarjeta">
-            <b>Hola, {usuario.name ?? usuario.email}</b>
-            <p className="nota">
-              Sesión iniciada con Google. Rol: {usuario.rol.replace("_", " ")} ·
-              Procesos guardados: {procesos} · Acompañamientos usados:{" "}
-              {usuario.acompUsados} · Disponibles por aporte: {usuario.creditos}
-            </p>
-            <div className="fila-btn">
-              <a className="btn" href="/recorrido" style={{ textDecoration: "none" }}>
-                Empezar el recorrido
-              </a>
-              {esTerapeuta(usuario.rol) && (
-                <a
-                  className="btn fantasma"
-                  href="/panel"
-                  style={{ textDecoration: "none" }}
-                >
-                  Panel de terapeuta
-                </a>
-              )}
+        <div className="fila-btn">
+          <a className="btn" href="/recorrido" style={{ textDecoration: "none" }}>
+            Empezar el recorrido
+          </a>
+          {usuario && esTerapeuta(usuario.rol) && (
+            <a className="btn fantasma" href="/panel" style={{ textDecoration: "none" }}>
+              Panel de terapeuta
+            </a>
+          )}
+        </div>
+
+        <p className="nota">
+          Son unos veinte minutos, escribiendo a tu ritmo. Puedes cerrar y
+          volver: lo que escribas queda guardado en este dispositivo y nadie más
+          lo ve.
+        </p>
+
+        {googleListo &&
+          (usuario ? (
+            <div className="cuenta-bar">
+              <span className="quien">Hola, {usuario.name ?? usuario.email}</span>
+              <span>
+                {procesos === 0
+                  ? "aún no tienes procesos guardados"
+                  : procesos === 1
+                    ? "1 proceso guardado"
+                    : `${procesos} procesos guardados`}
+              </span>
               <form
                 action={async () => {
                   "use server";
                   await signOut({ redirectTo: "/" });
                 }}
               >
-                <button className="btn fantasma" type="submit">
-                  Salir
-                </button>
+                <button type="submit">Salir</button>
               </form>
             </div>
-          </div>
-        ) : (
-          <div className="tarjeta">
-            <b>Entra para guardar tu proceso</b>
-            <p className="nota">
-              Con tu cuenta de Google tu recorrido queda guardado, puedes
-              continuarlo desde otro equipo y ver tu histórico. No publicamos
-              nada ni escribimos a tus contactos.
-            </p>
-            {googleListo ? (
-              <div className="fila-btn">
-                <form
-                  action={async () => {
-                    "use server";
-                    await signIn("google", { redirectTo: "/" });
-                  }}
-                >
-                  <button className="btn" type="submit">
-                    Entrar con Google
-                  </button>
-                </form>
-              </div>
-            ) : (
-              <p className="nota">
-                El acceso con Google todavía no está configurado en el servidor.
-                Faltan las variables <code>AUTH_GOOGLE_ID</code> y{" "}
-                <code>AUTH_GOOGLE_SECRET</code>.
-              </p>
-            )}
-          </div>
-        )}
+          ) : (
+            <div className="cuenta-bar">
+              <span>
+                ¿Quieres continuarlo desde otro equipo y guardar tu histórico?
+              </span>
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("google", { redirectTo: "/recorrido" });
+                }}
+              >
+                <button type="submit">Entrar con Google</button>
+              </form>
+            </div>
+          ))}
 
         <p className="aviso">
-          Esto es una herramienta de autoconocimiento, no una terapia: si
-          aparece algo muy pesado, acompáñate de alguien de confianza o de un
-          profesional.
+          Esto es una herramienta de autoconocimiento, no una terapia, y no
+          atiende urgencias. Si aparece algo muy pesado, acompáñate de alguien de
+          confianza o de un profesional.
         </p>
       </header>
 
@@ -114,7 +103,8 @@ export default async function Portada() {
         <div className="firma">Fuego Consciente</div>
         <p>
           Angela · Terapeuta integral. Masaje tailandés y escucha consciente en
-          Cali.
+          Cali. Si al hacer este recorrido se te movió algo que quieres acompañar
+          con el cuerpo, escríbeme.
         </p>
         <p>
           <a
