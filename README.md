@@ -39,7 +39,7 @@ git push -u origin main
 5. En **URIs de redireccionamiento autorizados** agrega estas dos
    (la de Railway la tendrás después del primer despliegue):
    - `http://localhost:3000/api/auth/callback/google`
-   - `https://TU-APP.up.railway.app/api/auth/callback/google`
+   - `https://fuego-consciente-production.up.railway.app/api/auth/callback/google`
 6. Guarda el **ID de cliente** y el **Secreto**.
 
 ### 3. Desplegar en Railway
