@@ -16,25 +16,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/" },
   callbacks: {
     async session({ session, user }) {
-      let actual = user as typeof user & {
-        rol: string;
-        creditos: number;
-        acompUsados: number;
-      };
+      let registro = await prisma.user.findUnique({ where: { id: user.id } });
 
       // El equipo se promueve solo: si el correo está en la lista, queda SUPER ADMIN.
-      const correo = (actual.email || "").toLowerCase();
-      if (superAdmins.includes(correo) && actual.rol !== "SUPER_ADMIN") {
-        actual = (await prisma.user.update({
-          where: { id: actual.id },
+      const correo = (user.email || "").toLowerCase();
+      if (registro && superAdmins.includes(correo) && registro.rol !== "SUPER_ADMIN") {
+        registro = await prisma.user.update({
+          where: { id: user.id },
           data: { rol: "SUPER_ADMIN" },
-        })) as typeof actual;
+        });
       }
 
-      session.user.id = actual.id;
-      session.user.rol = actual.rol;
-      session.user.creditos = actual.creditos;
-      session.user.acompUsados = actual.acompUsados;
+      session.user.id = user.id;
+      session.user.rol = registro?.rol ?? "USUARIO";
+      session.user.creditos = registro?.creditos ?? 0;
+      session.user.acompUsados = registro?.acompUsados ?? 0;
       return session;
     },
   },
