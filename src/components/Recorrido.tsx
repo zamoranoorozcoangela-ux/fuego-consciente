@@ -106,14 +106,22 @@ export default function Recorrido({
     return () => clearTimeout(t);
   }, [E, hayCuenta, procesoId]);
 
+  // Adónde llevar la pantalla. Es un estado aparte y no algo atado al número
+  // de paso: quien ya había avanzado más lejos no cambia de paso al elegir su
+  // necesidad, y entonces nada se movía y la persona quedaba perdida abajo.
+  const [destino, setDestino] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!destino) return;
+    document
+      .getElementById(destino)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setDestino(null);
+  }, [destino]);
+
   const abrirPaso = useCallback((n: number) => {
     setE((e) => ({ ...e, paso: Math.max(e.paso, n) }));
-    setTimeout(() => {
-      document.getElementById("paso" + n)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 60);
+    setDestino("paso" + n);
   }, []);
 
   /* ---------- Paso 2: cotejo ---------- */
@@ -508,6 +516,25 @@ export default function Recorrido({
             ) : (
               <>
                 <div className="avance">Respondiste las {DESCARTE.length} preguntas</div>
+                {N && (
+                  <div className="elegida">
+                    <span>
+                      Elegiste <b>{N.nombre}</b>. El recorrido sigue más abajo,
+                      en el paso 03.
+                    </span>
+                    <button
+                      className="btn fantasma"
+                      type="button"
+                      onClick={() =>
+                        document
+                          .getElementById("paso3")
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                      }
+                    >
+                      Ir al paso 03
+                    </button>
+                  </div>
+                )}
                 <div className="brasa-card">
                   <div className="etiqueta">Lo que quedó después del descarte</div>
                   <p className="esencia">
@@ -850,6 +877,24 @@ export default function Recorrido({
               ))}
             </div>
 
+            <div className="progreso">
+              <div className="barra">
+                <div
+                  className="relleno"
+                  style={{ width: `${Math.round((llenos / 21) * 100)}%` }}
+                  role="progressbar"
+                  aria-valuenow={llenos}
+                  aria-valuemin={0}
+                  aria-valuemax={21}
+                  aria-label="Días escritos del reto"
+                />
+              </div>
+              <p className="leyenda">
+                <b>{llenos}</b> de 21 días · {Math.round((llenos / 21) * 100)}%
+                del camino
+              </p>
+            </div>
+
             <div className="contadores">
               <div className="contador">
                 <span className="n">{llenos}</span>
@@ -861,8 +906,48 @@ export default function Recorrido({
               </div>
             </div>
 
+            <div className="patron">
+              <h3>Cómo he pensado y cómo he actuado</h3>
+              <div className="resumen">
+                {llenos === 0 ? (
+                  <p className="vacio">
+                    Cuando escribas tu primer día, aquí vas a ver junto lo que
+                    pensaste y lo que elegiste hacer distinto. Leerlo seguido, a
+                    los días, es donde se nota el cambio.
+                  </p>
+                ) : (
+                  Object.keys(E.bitacora)
+                    .sort((a, b) => Number(a) - Number(b))
+                    .map((k) => {
+                      const b = E.bitacora[k];
+                      return (
+                        <div className="entrada" key={k}>
+                          <div className="cabecera">
+                            <b>Día {k}</b>
+                            {b.fecha}
+                          </div>
+                          {b.penso && (
+                            <p className="linea">
+                              <span>Pensé</span>
+                              {b.penso}
+                            </p>
+                          )}
+                          {b.mejor && (
+                            <p className="linea actuado">
+                              <span>Elegí hacer</span>
+                              {b.mejor}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })
+                )}
+              </div>
+            </div>
+
             {diaAbierto !== null && (
               <DiaBitacora
+                key={diaAbierto}
                 dia={diaAbierto}
                 necesidad={N.nombre.toLowerCase()}
                 pregunta={N.banco[(diaAbierto - 1) % N.banco.length]}
@@ -954,9 +1039,16 @@ function DiaBitacora({
 }) {
   const [penso, setPenso] = useState(valor.penso);
   const [mejor, setMejor] = useState(valor.mejor);
+  const caja = useRef<HTMLDivElement>(null);
+
+  // El formulario aparece debajo del tablero: sin esto, en el celular se abre
+  // fuera de la pantalla y parece que el día no respondiera al toque.
+  useEffect(() => {
+    caja.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
 
   return (
-    <div className="bitacora-form">
+    <div className="bitacora-form" ref={caja}>
       <div className="cab">
         <b>Día {dia}</b>
         <button type="button" onClick={onCerrar}>

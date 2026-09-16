@@ -501,3 +501,49 @@ img{max-width:100%}
   width:min(300px,78%);
   height:auto;display:block;
 }
+
+/* ---------- Progreso y resumen de los 21 días ---------- */
+.progreso{display:flex;flex-direction:column;gap:7px}
+.progreso .barra{
+  height:12px;border-radius:99px;
+  background:var(--ground-2);border:1px solid var(--linea);
+  overflow:hidden;
+}
+.progreso .relleno{
+  height:100%;
+  background:linear-gradient(90deg,var(--terracota),var(--brasa-luz));
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+.progreso .leyenda{
+  font-size:.79rem;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;
+}
+.progreso .leyenda b{color:var(--terracota);font-weight:600}
+
+.resumen{display:flex;flex-direction:column;gap:14px}
+.resumen .vacio{font-size:.9rem;color:var(--ink-faint);font-weight:300}
+.resumen .entrada{
+  display:flex;flex-direction:column;gap:7px;
+  border-left:2px solid var(--linea-fuerte);
+  padding:2px 0 2px 14px;
+}
+.resumen .cabecera{
+  display:flex;align-items:baseline;gap:9px;
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:600;
+}
+.resumen .cabecera b{color:var(--brasa);font-variant-numeric:tabular-nums}
+.resumen .linea{font-size:.94rem;line-height:1.5;color:var(--ink)}
+.resumen .linea span{
+  color:var(--ink-faint);font-size:.78rem;
+  letter-spacing:.08em;text-transform:uppercase;
+  display:block;font-weight:500;
+}
+.resumen .actuado{color:var(--terracota)}
+
+.elegida{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;
+  background:var(--ground-2);border-left:3px solid var(--brasa);
+  padding:14px 18px;font-size:.95rem;
+}
+.elegida b{font-weight:500;color:var(--terracota)}
